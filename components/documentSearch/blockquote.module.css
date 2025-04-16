@@ -1,0 +1,8 @@
+.blockquote {
+  padding: 10px 20px;
+  border-left: 4px solid gray;
+  background-color: #f9f9f9; /* Very light gray */
+  font-style: italic;
+  font-size: 0.9em;
+  margin: 1em;
+}
