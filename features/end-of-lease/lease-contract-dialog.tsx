@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
 import { cn } from '@/lib/utils';
@@ -24,17 +23,12 @@ import { leasingAircraftList } from './sample-data';
 import { LeasingAircraft } from './types';
 
 export function LeaseContractDialog() {
-    const router = useRouter();
     const createProject = useCreateProject();
 
     const [selectedAircraft, setSelectedAircraft] = useState<
         LeasingAircraft | undefined
     >(leasingAircraftList[0]);
-    const [contractTitle, setContractTitle] = useState('');
-    const [lessee, setLessee] = useState('ANA Group');
-    const [deliveryDate, setDeliveryDate] = useState(
-        new Date().toISOString().slice(0, 10),
-    );
+    const [lessee, setLessee] = useState('');
     const [endOfLease, setEndOfLease] = useState(
         new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             .toISOString()
@@ -50,17 +44,12 @@ export function LeaseContractDialog() {
         { value: 'Peach Aviation', label: 'Peach (Japan)' },
     ];
 
-    const isTitleValid = contractTitle.trim().length >= 3;
 
     const handleSubmit = async () => {
-        if (!selectedAircraft || !contractTitle.trim() || !lessee.trim()) {
-            return toast.error('Please fill all required fields');
-        }
-
         toast.promise(
             createProject.mutateAsync({
                 aircraft: selectedAircraft,
-                title: contractTitle,
+                title: '',
             }),
             {
                 loading: 'Creating new project...',
@@ -68,8 +57,6 @@ export function LeaseContractDialog() {
                 error: 'Error creating project',
             },
         );
-
-        router.push('/lease/dashboard');
     };
 
     return (
@@ -106,14 +93,8 @@ export function LeaseContractDialog() {
                 <div>
                     <Label className="text-gray-700">Contract Title</Label>
                     <Input
-                        value={contractTitle}
-                        onChange={(e) => setContractTitle(e.target.value)}
                         placeholder="Enter contract title"
-                        className={cn(
-                            'transition-all duration-500',
-                            isTitleValid ? 'border-green-500' : 'text-red-500',
-                            'focus:outline-none focus:ring-2 focus:ring-blue-500',
-                        )}
+                        className={'border-gray-200'}
                     />
 
                     <div className="mt-4">
@@ -128,8 +109,6 @@ export function LeaseContractDialog() {
                         <Label>Delivery Date</Label>
                         <Input
                             type="date"
-                            value={deliveryDate}
-                            onChange={(e) => setDeliveryDate(e.target.value)}
                         />
                     </div>
                 </div>
@@ -140,7 +119,6 @@ export function LeaseContractDialog() {
                         <Label>Lessee</Label>
                         <Select
                             onValueChange={setLessee}
-                            defaultValue="ANA Group"
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select lessee" />
@@ -182,7 +160,6 @@ export function LeaseContractDialog() {
             <div className="flex mt-8">
                 <Button
                     onClick={handleSubmit}
-                    disabled={!isTitleValid}
                     className="transition-all duration-500"
                 >
                     Create Contract
