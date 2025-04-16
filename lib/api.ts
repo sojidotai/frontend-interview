@@ -204,11 +204,7 @@ export async function ragModels(props: { apiKey: string; [key: string]: any }) {
     const headers = { 'X-API-KEY': apiKey };
 
     try {
-        const response = await axios.get(`${baseUrl}/api/search/rag_models`, {
-            headers,
-            params: rest,
-        });
-        return toCamelCase(response.data) as RAGModel[];
+        return [] as RAGModel[];
     } catch (err) {
         handleError(err);
     }
@@ -554,10 +550,13 @@ export const useCommitInfo = () => {
     return useQuery({
         queryKey: ['commit-info'],
         queryFn: async () => {
-            let res = await axios.get(`${baseUrl}/api/commit-info/`, {
-                headers,
-            });
-            return toCamelCase<CommitInfo>(res.data);
+            const mockCommitInfo: CommitInfo = {
+                commitSha: 'd4f7e9c2a5b8f9132e6a7c1e2f9b12345678abcd',
+                commitMessage: 'Fix document parsing bug in compliance handler',
+                commitDate: '2025-04-15T17:42:10Z',
+              };
+              
+            return mockCommitInfo;
         },
         enabled: !!apiKey,
     });
@@ -617,12 +616,19 @@ export const ping = async (): Promise<'pong' | undefined> => {
     }
 };
 
+
+
+
 export const useFlags = () => {
     return useQuery({
         queryKey: ['feature-flags'],
-        queryFn: async () => {
-            let res = await axios.get(`${baseUrl}/api/flags`);
-            return toCamelCase<FeatureFlag[]>(res.data);
+        queryFn: async (): Promise<FeatureFlag[]> => {
+            return [
+                { name: 'example_learning', enabled: true },
+                { name: 'end_of_lease', enabled: true },
+                { name: 'file_system', enabled: true },
+                { name: 'maintenance_agent', enabled: true },
+            ];
         },
     });
 };
@@ -631,8 +637,7 @@ export const useFlag = (flag: string) => {
     return useQuery<boolean, Error>({
         queryKey: ['feature-flags', flag],
         queryFn: async () => {
-            let res = await axios.get(`${baseUrl}/api/flags/${flag}`);
-            return res.data;
+            return true;
         },
         refetchInterval: 10000,
         staleTime: 5000,

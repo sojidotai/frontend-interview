@@ -32,6 +32,96 @@ type PaginatedResponse<t> = {
     total: number;
     results: t[];
 };
+            
+const mockLeasingDocuments: LeasingDocument[] = [
+    {
+      id: 1,
+      teamId: 101,
+      fileId: 501,
+      leasingProjectId: 3001,
+      status: DocumentStatus.pending,
+      createdAt: '2025-04-01T10:20:30Z',
+      updatedAt: '2025-04-02T12:00:00Z',
+      connectedDocuments: [
+        { id: 201, title: 'Initial Agreement Draft' }
+      ],
+      raw: {
+        type: 'TechnicalDocument',
+        id: { value: 'AVD-001', type: 'string' },
+        title: { value: 'Lease Agreement', type: 'localized_string', language: 'en' },
+        issueDate: { value: '2025-03-28', type: 'date' },
+        effectiveDate: { value: '2025-04-01', type: 'date' },
+        expiryDate: null,
+        aircraft: {
+          registration: { value: 'N12345', type: 'string' },
+          model: { value: 'Boeing 737', type: 'string' },
+          msn: { value: '45678', type: 'string' },
+        },
+        estimatedManHours: { value: 20, type: 'number' },
+        actualManHours: null,
+        references: [],
+        priority: { value: 'High', type: 'string' },
+        compliance: {
+          type: { value: 'mandatory', type: 'string' },
+          interval: { value: '12 months', type: 'string' }
+        },
+        issuingAuthority: { value: 'Aviation Authority', type: 'string' },
+        tasks: [],
+        approvals: []
+      },
+      seen: false
+    },
+    {
+      id: 2,
+      teamId: 102,
+      fileId: 502,
+      leasingProjectId: 3002,
+      status: DocumentStatus.verified,
+      createdAt: '2025-03-10T09:00:00Z',
+      updatedAt: '2025-03-15T16:30:00Z',
+      connectedDocuments: null,
+      raw: {
+        type: 'MaintenanceRecord',
+        id: { value: 'AVD-002', type: 'string' },
+        title: { value: 'Maintenance Log', type: 'localized_string', language: 'en' },
+        issueDate: { value: '2025-03-01', type: 'date' },
+        effectiveDate: { value: '2025-03-05', type: 'date' },
+        expiryDate: { value: '2026-03-01', type: 'date' },
+        aircraft: {
+          registration: { value: 'G-ABCD', type: 'string' },
+          model: { value: 'Airbus A320', type: 'string' },
+          msn: { value: '87654', type: 'string' },
+        },
+        estimatedManHours: { value: 35, type: 'number' },
+        actualManHours: { value: 32, type: 'number' },
+        references: [],
+        priority: { value: 'Medium', type: 'string' },
+        compliance: {
+          type: { value: 'optional', type: 'string' },
+          interval: { value: '6 months', type: 'string' }
+        },
+        issuingAuthority: { value: 'Tech Aviation Services', type: 'string' },
+        tasks: [],
+        approvals: []
+      },
+      seen: true
+    },
+    {
+      id: 3,
+      teamId: 103,
+      fileId: 503,
+      leasingProjectId: 3003,
+      status: DocumentStatus.requires_attention,
+      createdAt: '2025-02-01T14:45:00Z',
+      updatedAt: '2025-02-02T08:15:00Z',
+      connectedDocuments: [
+        { id: 202, title: 'Checklist Summary' },
+        { id: 203, title: 'Inspection Photos' }
+      ],
+      raw: null,
+      seen: false
+    }
+  ];
 
 export const useDocuments = ({
     projectId,
@@ -52,12 +142,7 @@ export const useDocuments = ({
     return useQuery({
         queryKey: ['leasingDocuments', { projectId, limit, skip, ids, matched }],
         queryFn: async () => {
-            let res = await axios.get(`${baseUrl}/api/leasing/`, {
-                headers,
-                params: { project_id: projectId, ids, type, matched, limit, skip },
-                paramsSerializer: { indexes: null },
-            });
-            return toCamelCase<PaginatedResponse<LeasingDocument>>(res.data);
+            return mockLeasingDocuments;
         },
         enabled: !!apiKey,
         refetchInterval: 3000,
