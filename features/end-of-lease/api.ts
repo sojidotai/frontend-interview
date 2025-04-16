@@ -131,12 +131,8 @@ export const useCreateProject = () => {
 
     return useMutation({
         mutationFn: async (project: ProjectCreate) => {
-            const response = await axios.post(
-                `${baseUrl}/api/leasing/projects`,
-                toSnakeCase(project),
-                { headers },
-            );
-            return toCamelCase<LeasingProject>(response.data);
+            mockLeasingProjects.push(project);
+            return project;
         },
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['leasingProjects'] }),
